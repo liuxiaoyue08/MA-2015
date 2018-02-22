@@ -1,0 +1,164 @@
+                                                           The SAS System                        15:15 Tuesday, December 1, 2015   1
+
+                                                      The UNIVARIATE Procedure
+                                                       Variable:  tmax_range
+
+                                                              Moments
+
+                                  N                        1935    Sum Weights               1935
+                                  Mean               22.6700308    Sum Observations    43866.5096
+                                  Std Deviation      10.3787558    Variance            107.718573
+                                  Skewness           -0.0740905    Kurtosis            0.87526447
+                                  Uncorrected SS     1202782.84    Corrected SS         208327.72
+                                  Coeff Variation    45.7818339    Std Error Mean      0.23594176
+
+
+                                                     Basic Statistical Measures
+ 
+                                           Location                    Variability
+
+                                       Mean     22.67003     Std Deviation           10.37876
+                                       Median   23.92929     Variance               107.71857
+                                       Mode      0.00000     Range                   99.20769
+                                                             Interquartile Range     14.72366
+
+
+                                                     Tests for Location: Mu0=0
+ 
+                                          Test           -Statistic-    -----p Value------
+
+                                          Student's t    t  96.08316    Pr > |t|    <.0001
+                                          Sign           M       963    Pr >= |M|   <.0001
+                                          Signed Rank    S  927850.5    Pr >= |S|   <.0001
+
+
+                                                      Quantiles (Definition 5)
+ 
+                                                      Quantile       Estimate
+
+                                                      100% Max       99.20769
+                                                      99%            42.82788
+                                                      95%            38.25630
+                                                      90%            34.88451
+                                                      75% Q3         30.07981
+                                                      50% Median     23.92929
+                                                      25% Q1         15.35615
+                                                      10%             6.68495
+                                                      5%              3.88710
+                                                      1%              1.31711
+                                                      0% Min          0.00000
+
+
+                                                        Extreme Observations
+ 
+                                              ----Lowest----        -----Highest-----
+ 
+                                              Value      Obs           Value      Obs
+
+                                                  0     1007         46.2056     1057
+                                                  0      964         49.5554     1058
+                                                  0      923         50.5737     1054
+                                                           The SAS System                        15:15 Tuesday, December 1, 2015   2
+
+                                                      The UNIVARIATE Procedure
+                                                       Variable:  tmax_range
+
+                                                        Extreme Observations
+ 
+                                              ----Lowest----        -----Highest-----
+ 
+                                              Value      Obs           Value      Obs
+
+                                                  0      857         61.7298     1047
+                                                  0      652         99.2077     1884
+
+
+                                                           Missing Values
+ 
+                                                                   -----Percent Of-----
+                                            Missing                             Missing
+                                              Value       Count     All Obs         Obs
+
+                                                  .           6        0.31      100.00
+                                                           The SAS System                        15:15 Tuesday, December 1, 2015   3
+
+                                                      The UNIVARIATE Procedure
+                                                       Variable:  tmin_range
+
+                                                              Moments
+
+                                  N                        1935    Sum Weights               1935
+                                  Mean               21.2256788    Sum Observations    41071.6884
+                                  Std Deviation      11.8888324    Variance            141.344335
+                                  Skewness           6.27958188    Kurtosis            142.538225
+                                  Uncorrected SS     1145134.41    Corrected SS        273359.945
+                                  Coeff Variation    56.0115533    Std Error Mean      0.27027055
+
+
+                                                     Basic Statistical Measures
+ 
+                                           Location                    Variability
+
+                                       Mean     21.22568     Std Deviation           11.88883
+                                       Median   21.91834     Variance               141.34434
+                                       Mode      0.00000     Range                  293.95865
+                                                             Interquartile Range     14.65321
+
+
+                                                     Tests for Location: Mu0=0
+ 
+                                          Test           -Statistic-    -----p Value------
+
+                                          Student's t    t  78.53493    Pr > |t|    <.0001
+                                          Sign           M       963    Pr >= |M|   <.0001
+                                          Signed Rank    S  927850.5    Pr >= |S|   <.0001
+
+
+                                                      Quantiles (Definition 5)
+ 
+                                                      Quantile        Estimate
+
+                                                      100% Max       293.95865
+                                                      99%             40.79365
+                                                      95%             37.07891
+                                                      90%             34.15621
+                                                      75% Q3          28.49250
+                                                      50% Median      21.91834
+                                                      25% Q1          13.83929
+                                                      10%              6.54762
+                                                      5%               3.33413
+                                                      1%               1.17336
+                                                      0% Min           0.00000
+
+
+                                                        Extreme Observations
+ 
+                                              ----Lowest----        ------Highest-----
+ 
+                                              Value      Obs            Value      Obs
+
+                                                  0      995          44.9260     1060
+                                                  0      857          46.1775     1054
+                                                  0      841          55.2577     1047
+                                                           The SAS System                        15:15 Tuesday, December 1, 2015   4
+
+                                                      The UNIVARIATE Procedure
+                                                       Variable:  tmin_range
+
+                                                        Extreme Observations
+ 
+                                              ----Lowest----        ------Highest-----
+ 
+                                              Value      Obs            Value      Obs
+
+                                                  0      836          94.3000     1884
+                                                  0      834         293.9587     1693
+
+
+                                                           Missing Values
+ 
+                                                                   -----Percent Of-----
+                                            Missing                             Missing
+                                              Value       Count     All Obs         Obs
+
+                                                  .           6        0.31      100.00

@@ -1,0 +1,79 @@
+                                                           The SAS System                        16:44 Tuesday, December 1, 2015   1
+
+                                                      The UNIVARIATE Procedure
+                                                        Variable:  tmax_diff
+
+                                                              Moments
+
+                                  N                       52685    Sum Weights              52685
+                                  Mean               -0.0961432    Sum Observations    -5065.3044
+                                  Std Deviation      7.83531387    Variance            61.3921435
+                                  Skewness           -1.1809429    Kurtosis            13.4013433
+                                  Uncorrected SS     3234870.68    Corrected SS        3234383.69
+                                  Coeff Variation    -8149.6288    Std Error Mean      0.03413602
+
+
+                                                     Basic Statistical Measures
+ 
+                                           Location                    Variability
+
+                                       Mean     -0.09614     Std Deviation            7.83531
+                                       Median    0.14821     Variance                61.39214
+                                       Mode      0.00000     Range                  146.80000
+                                                             Interquartile Range      7.78615
+
+
+                                                     Tests for Location: Mu0=0
+ 
+                                          Test           -Statistic-    -----p Value------
+
+                                          Student's t    t  -2.81647    Pr > |t|    0.0049
+                                          Sign           M       647    Pr >= |M|   <.0001
+                                          Signed Rank    S  12866529    Pr >= |S|   0.0002
+
+
+                                                     Quantiles (Definition 5)
+ 
+                                                     Quantile         Estimate
+
+                                                     100% Max        43.800000
+                                                     99%             18.183333
+                                                     95%             12.033333
+                                                     90%              8.904706
+                                                     75% Q3           4.000000
+                                                     50% Median       0.148214
+                                                     25% Q1          -3.786154
+                                                     10%             -9.366667
+                                                     5%             -13.606250
+                                                     1%             -21.014286
+                                                     0% Min        -103.000000
+
+
+                                                        Extreme Observations
+ 
+                                               -----Lowest----        ----Highest----
+ 
+                                                Value      Obs         Value      Obs
+
+                                               -103.0    51462         38.40    51084
+                                               -101.6    51474         38.50    50442
+                                               -101.1    51464         38.55    50683
+                                                           The SAS System                        16:44 Tuesday, December 1, 2015   2
+
+                                                      The UNIVARIATE Procedure
+                                                        Variable:  tmax_diff
+
+                                                        Extreme Observations
+ 
+                                               -----Lowest----        ----Highest----
+ 
+                                                Value      Obs         Value      Obs
+
+                                               -101.0    51473         42.70    50652
+                                               -100.4    51463         43.80    50441
+                                                           The SAS System                        16:44 Tuesday, December 1, 2015   3
+
+                                                              tmax_      tmax_
+                                                     Obs     diff10      diff90
+
+                                                      1     -9.36667    8.90471

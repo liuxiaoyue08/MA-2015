@@ -1,0 +1,179 @@
+#Problem Set 2 Solutions
+#Xiaoyue (Platina) Liu
+#UMID:2858909
+#Email: xiaoyliu@umich.edu
+
+#Problem 1
+#Vectorization
+#import library dplyr
+library(dplyr)
+# read in data
+data =read.csv("ps2_1.csv",header=FALSE)      
+a <- data[,1]
+b <- data[,2]
+c <- data[,3]
+d <- data[,4]
+#Calculate chi-square value for each 2x2 table
+data$chisqvalue <- ((a+b+c+d)*((a*d-b*c)^2))/((a+b)*(c+d)*(a+c)*(b+d))
+#df=1,k=3.841
+#Calculate the number of rows and columns where I think they are highly dependent
+num_sig <- length(data$chisqvalue[data$chisqvalue>3.841])-sum(is.na(data$chisqvalue))
+#The number is 935
+
+#Problem 2
+f = function(X,p){
+  #Calculate the Euclidean distance matrix
+  mdist <- as.matrix(dist(X))
+  #Creat a zero matrix
+  mat <- matrix(rep(0,dim(X)[1]*p),nrow=dim(X)[1],ncol=p)
+  k = p+1
+  for(i in 1:dim(X)[1]){
+    #Take each row's Euclidean distance to ith row
+    mvec <- mdist[i,]
+    #Find the closest p rows excluding ith row itself
+    pmvec <- order(mvec,decreasing=F)[2:k]
+    #Put them into the matrix
+    mat[i,] = mat[i,]+pmvec
+  }
+  return(mat)
+}
+
+
+fma = function(X,p){
+  #Creat a zero matrix
+  mat <- matrix(rep(0,dim(X)[1]*p),nrow=dim(X)[1],ncol=p)
+  k = p+1
+  for(i in 1:dim(X)[1]){
+    #Calculate the Mahalanobis distance matrix
+    madist <- as.matrix(mahalanobis(X,X[i],cov(X)))
+    #Find the closest p rows excluding ith row itself
+    pamvec <- order(madist,decreasing=F)[2:k]
+    #Put them into the matrix
+    mat[i,] = mat[i,]+pamvec
+  }
+  return(mat)
+}
+
+#Generate p
+test_p=5*(1:3)
+#Generate n
+test_nrow=1000*(1:10)
+#Generate m
+test_ncol=10*(1:10)
+#Creat empty matrix to store runtime later
+timer_euclidean=array(0,c(length(test_p),length(test_nrow),length(test_ncol)))
+timer_mahalanobis=array(0,c(length(test_p),length(test_nrow),length(test_ncol)))
+#Run and save the run time
+for(idx_p in (1:length(test_p))){
+  for(idx_nrow in (1:length(test_nrow))){
+    for(idx_ncol in (1:length(test_ncol))){
+      #Generate test Matrix x
+      rX=matrix(rnorm(test_nrow[idx_nrow]*test_ncol[idx_ncol]),c(test_nrow[idx_nrow],test_ncol[idx_ncol]))
+      test_time=proc.time()
+      #Run Euclidean Distance function
+      dummyrun=f(rX,test_p[idx_p])
+      #Save the runtime to the matrix
+      timer_euclidean[idx_p,idx_nrow,idx_ncol]=as.numeric(proc.time()-test_time)[1]
+      test_time=proc.time()
+      #Run Mahalanobis Distance Function
+      dummyrun2=fma(rX,test_p[idx_p])
+      #Save the runtime
+      timer_mahalanobis[idx_p,idx_nrow,idx_ncol]=as.numeric(proc.time()-test_time)[1]
+    }
+  }
+}
+#Save the time matrix into a RData file
+save(timer_euclidean,timer_mahalanobis,file="test_timer.RData")
+#The runtime program was run on the luigi
+q(save="no")
+#Load the data to plot
+load('test_timer.RData')
+#Plot Runtime against n,m
+contour(x=10*(1:10),y=1000*(1:10),timer_euclidean[3,,],xlab="#Column",ylab="#Row",main="Process time of Euclidean Distance,p=15")
+contour(x=10*(1:10),y=1000*(1:10),timer_mahalanobis[3,,],xlab="#Column",ylab="#Row",main="Process time of Mahalanobis Distance,p=15")
+
+#Problem 3
+library(dplyr)
+data2 =read.csv("ps1_1.csv",header=FALSE)
+#Check for duplicated id
+index<-duplicated(data2$Id)
+#Drop duplicated instances
+data2=data2[!index,]
+#Remove \t ' ( ) " " "  
+#Capitallize the state
+#Change the state into standard
+data2$State=gsub("\t","",data2$State)
+data2$State=gsub("\\'","",data2$State)
+data2$State=gsub(" ","",data2$State)
+data2$State=gsub("\\(","",data2$State)
+data2$State=gsub("\\)","",data2$State)
+data2$State=gsub("\"","",data2$State)
+data2$State=toupper(data2$State)
+data2$State=gsub("HAWAII","HI",data2$State)
+data2$State=gsub("KANSAS","KS",data2$State)
+data2$State=gsub("ARIZONA","AZ",data2$State)
+data2$State=gsub("CONN","CT",data2$State)
+data2$State=gsub("CTCT","CT",data2$State)
+data2$State=gsub("CALIF","CA",data2$State)
+data2$State=gsub("MICH","MI",data2$State)
+data2$State=gsub("IND","IN",data2$State)
+ata2$State=gsub("HA","HI",data2$State)
+data2$State=gsub("UNKNOWN",NA,data2$State)
+data2$State=gsub("OTHER",NA,data2$State)
+data2$State=gsub("IAKS",NA,data2$State)
+data2$State=gsub("AD",NA,data2$State)
+data2$State=gsub("OI",NA,data2$State)
+data2$State=gsub("IB",NA,data2$State)
+#Group the data according to state
+gb=group_by(data2,State)
+#Calculate mean of weight variable according to state
+su<-summarize(gb,Mean=mean(weight),Variance=var(weight),n=n())
+
+#Problem 4
+#Import foreign package
+library(foreign)
+#Read in SAS XPT file
+dental<-read.xport("C:/Users/Heathtasia/Desktop/OHXDEN_F.XPT")
+dgraphic<-read.xport("C:/Users/Heathtasia/Desktop/DEMO_F.XPT")
+#Join the dental data and the demographical data
+dentaldata<-inner_join(dental,dgraphic,by="SEQN")
+#Change the Age of Exam data into years
+dentaldata$age <- dentaldata$RIDAGEEX %/% 12
+#Group by age
+dgb=group_by(dentaldata,age)
+#Summarise the percentage of permanent tooth existing on each tooth position
+percentage<-summarise(dgb, t1=sum(OHX01TC==2, na.rm=T)/n(),t2=sum(OHX02TC==2, na.rm=T)/n(),t3=sum(OHX03TC==2, na.rm=T)/n(),t4=sum(OHX04TC==2, na.rm=T)/n(),t5=sum(OHX05TC==2, na.rm=T)/n(),t6=sum(OHX06TC==2, na.rm=T)/n(),t7=sum(OHX07TC==2, na.rm=T)/n(),t8=sum(OHX08TC==2, na.rm=T)/n(),t9=sum(OHX09TC==2, na.rm=T)/n(),t10=sum(OHX10TC==2, na.rm=T)/n(),t11=sum(OHX11TC==2, na.rm=T)/n(),t12=sum(OHX12TC==2, na.rm=T)/n(),t13=sum(OHX13TC==2, na.rm=T)/n(),t14=sum(OHX14TC==2, na.rm=T)/n(),t15=sum(OHX15TC==2, na.rm=T)/n(),t16=sum(OHX16TC==2, na.rm=T)/n(),t17=sum(OHX17TC==2, na.rm=T)/n(),t18=sum(OHX18TC==2, na.rm=T)/n(),t19=sum(OHX19TC==2, na.rm=T)/n(),t20=sum(OHX20TC==2, na.rm=T)/n(),t21=sum(OHX21TC==2, na.rm=T)/n(),t22=sum(OHX22TC==2, na.rm=T)/n(),t23=sum(OHX23TC==2, na.rm=T)/n(),t24=sum(OHX24TC==2, na.rm=T)/n(),t25=sum(OHX25TC==2, na.rm=T)/n(),t26=sum(OHX26TC==2, na.rm=T)/n(),t27=sum(OHX27TC==2, na.rm=T)/n(),t28=sum(OHX28TC==2, na.rm=T)/n(),t29=sum(OHX29TC==2, na.rm=T)/n(),t30=sum(OHX30TC==2, na.rm=T)/n(),t31=sum(OHX31TC==2, na.rm=T)/n(),t32=sum(OHX32TC==2, na.rm=T)/n())
+#Plot percentage against age
+par(mfrow=c(4,8))
+plot(x=percentage$age,y=percentage$t1,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t2,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t3,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t4,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t5,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t6,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t7,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t8,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t9,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t10,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t11,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t12,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t13,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t14,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t15,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t16,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t17,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t18,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t19,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t20,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t21,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t22,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t23,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t24,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t25,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t26,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t27,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t28,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t29,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t30,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t31,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')
+plot(x=percentage$age,y=percentage$t32,xlab="Age",ylab="Permanent Tooth Existing Percentage",main="OHX01",ylim=c(0,1),type='o',col='blue')

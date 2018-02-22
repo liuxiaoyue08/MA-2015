@@ -1,0 +1,144 @@
+1                                                          The SAS System                            14:47 Tuesday, December 1, 2015
+
+NOTE: Copyright (c) 2002-2010 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.3 (TS1M1) 
+      Licensed to UNIVERSITY OF MICHIGAN-SFA-T&R, Site 70080438.
+NOTE: This session is executing on the Linux 2.6.32-504.12.2.el6.x86_64 (LIN X64) platform.
+
+
+
+NOTE: Updated analytical products:
+
+SAS/STAT 9.3_M1, SAS/ETS 9.3_M1, SAS/OR 9.3_M1
+
+You are running SAS 9. Some SAS 8 files will be automatically converted 
+by the V9 engine; others are incompatible.  Please see 
+http://support.sas.com/rnd/migration/planning/platform/64bit.html
+
+PROC MIGRATE will preserve current SAS file attributes and is 
+recommended for converting all your SAS libraries from any 
+SAS 8 release to SAS 9.  For details and examples, please see
+http://support.sas.com/rnd/migration/index.html
+
+
+This message is contained in the SAS news file, and is presented upon
+initialization.  Edit the file "news" in the "misc/base" directory to
+display site-specific news and information in the program log.
+The command line option "-nonews" will prevent this display.
+
+
+
+
+NOTE: SAS initialization used:
+      real time           0.10 seconds
+      cpu time            0.02 seconds
+      
+1          libname mydata '~/506/';
+NOTE: Libref MYDATA was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: /afs/umich.edu/user/x/i/xiaoyliu/506
+2          
+3          data df;
+4               set mydata.finaldata;
+5          
+
+NOTE: There were 65896 observations read from the data set MYDATA.FINALDATA.
+NOTE: The data set WORK.DF has 65896 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+6          proc sql;
+7               create table tmp_range as
+8               select station,
+9          	    range(TMAX) as tmax_range,
+10         	    range(TMIN) as tmin_range,
+11                     range(TMAX)-range(TMIN) as range_diff
+12              from df
+13              group by station;
+NOTE: Table WORK.TMP_RANGE created, with 1941 rows and 4 columns.
+2                                                          The SAS System                            14:47 Tuesday, December 1, 2015
+
+
+14         quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.03 seconds
+      
+
+15         
+16         proc print data=tmp_range;
+17         
+
+NOTE: There were 1941 observations read from the data set WORK.TMP_RANGE.
+NOTE: The PROCEDURE PRINT printed pages 1-36.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.02 seconds
+      
+
+18         data mydata.tmp_range;
+19              set tmp_range;
+20         
+
+NOTE: There were 1941 observations read from the data set WORK.TMP_RANGE.
+NOTE: The data set MYDATA.TMP_RANGE has 1941 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+      
+
+21         proc summary data=tmp_range;
+22              output out=maxrange(drop=_TYPE_ _FREQ_)
+23                     maxid(range_diff(station))=station
+24                     max(range_diff)=max_range;
+25         
+
+NOTE: There were 1941 observations read from the data set WORK.TMP_RANGE.
+NOTE: The data set WORK.MAXRANGE has 1 observations and 2 variables.
+NOTE: PROCEDURE SUMMARY used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+26         proc summary data=tmp_range;
+27              output out=minrange(drop=_TYPE_ _FREQ_)
+28                     minid(range_diff(station))=station
+29                     min(range_diff)=min_range;
+30         
+
+NOTE: There were 1941 observations read from the data set WORK.TMP_RANGE.
+NOTE: The data set WORK.MINRANGE has 1 observations and 2 variables.
+NOTE: PROCEDURE SUMMARY used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+31         proc print data=maxrange;
+
+NOTE: There were 1 observations read from the data set WORK.MAXRANGE.
+3                                                          The SAS System                            14:47 Tuesday, December 1, 2015
+
+NOTE: The PROCEDURE PRINT printed page 37.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+32         proc print data=minrange;
+33         
+34         run;
+
+NOTE: There were 1 observations read from the data set WORK.MINRANGE.
+NOTE: The PROCEDURE PRINT printed page 38.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           0.22 seconds
+      cpu time            0.10 seconds
+      

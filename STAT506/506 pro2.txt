@@ -1,0 +1,26 @@
+Problem set 2
+
+Sun, Oct 11, 2015
+Due Wednesday, October 28th.
+
+All these problems should be solved entirely using R.
+
+Each row of this file contains the cell counts for a 2 x 2 contingency table. For example, if a row contains the values 9,3,8,5, then the corresponding contingency table would be
+
+9 | 3
+¡ª¨C
+8 | 5
+
+Write R code to calculate the chi^2 statistic for the standard test of independence of rows and columns for each of these tables. Use vectorization to make the calculations efficient. How many of the tables are you highly confident were sampled from populations with dependent rows and columns? Justify your response.
+
+ 
+
+a. Suppose you are given an n x m array X of numbers. Write a function in R that identifies the p closest rows of X to each given row of X, where closeness is measured by the usual Euclidian norm. Use vectorization to make the calculations efficient. Your function should return an n x p array of integers, with the values in row i containing the indices of the rows of X that are closest to row i of X (excluding row i itself).
+
+b. Extend your code from part (a) so that it measures distance using the Mahalanobis metric, rather than the Euclidean metric.
+
+c. Time your code and produce a graph showing how the run time scales for various values of m and n.
+
+Write a solution for problem 2 from the first problem set using R.
+
+Using the NHANES 2009-2010 dental examination data, produce a graph for each tooth position showing the proportion of the population with a permanent tooth present at that position, as a function of age.

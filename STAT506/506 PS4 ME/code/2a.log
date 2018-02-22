@@ -1,0 +1,159 @@
+1                                                          The SAS System                            15:51 Tuesday, December 1, 2015
+
+NOTE: Copyright (c) 2002-2010 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.3 (TS1M1) 
+      Licensed to UNIVERSITY OF MICHIGAN-SFA-T&R, Site 70080438.
+NOTE: This session is executing on the Linux 2.6.32-504.12.2.el6.x86_64 (LIN X64) platform.
+
+
+
+NOTE: Updated analytical products:
+
+SAS/STAT 9.3_M1, SAS/ETS 9.3_M1, SAS/OR 9.3_M1
+
+You are running SAS 9. Some SAS 8 files will be automatically converted 
+by the V9 engine; others are incompatible.  Please see 
+http://support.sas.com/rnd/migration/planning/platform/64bit.html
+
+PROC MIGRATE will preserve current SAS file attributes and is 
+recommended for converting all your SAS libraries from any 
+SAS 8 release to SAS 9.  For details and examples, please see
+http://support.sas.com/rnd/migration/index.html
+
+
+This message is contained in the SAS news file, and is presented upon
+initialization.  Edit the file "news" in the "misc/base" directory to
+display site-specific news and information in the program log.
+The command line option "-nonews" will prevent this display.
+
+
+
+
+NOTE: SAS initialization used:
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+1          libname mydata '~/506/';
+NOTE: Libref MYDATA was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: /afs/umich.edu/user/x/i/xiaoyliu/506
+2          filename ghcnd_gz pipe "gzip -dc 2014.csv.gz" lrecl=80;
+3          
+4          data ghcnd(rename=(obsval=tmax));
+5               infile ghcnd_gz delimiter=",";
+6               input station $ date : yymmdd8. obstype $ obsval;
+7               format date mmddyy10.;
+8               month = month(date);
+9               if obstype="TMAX";
+10              obsval=obsval/10;
+11         
+
+NOTE: The infile GHCND_GZ is:
+      Pipe command="gzip -dc 2014.csv.gz"
+
+NOTE: 33139529 records were read from the infile GHCND_GZ.
+      The minimum record length was 32.
+      The maximum record length was 40.
+NOTE: The data set WORK.GHCND has 4480881 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           24.63 seconds
+      cpu time            24.60 seconds
+2                                                          The SAS System                            15:51 Tuesday, December 1, 2015
+
+      
+
+12         proc sql;
+13              creat table tmax_dist as
+                _____
+                1
+WARNING 1-322: Assuming the symbol CREATE was misspelled as creat.
+
+14              select station,month, mean(tmax) as mntmax, std(tmax) as stdtmax
+15              from ghcnd
+16              group by station,month;
+NOTE: Table WORK.TMAX_DIST created, with 22686 rows and 4 columns.
+
+17         quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           1.07 seconds
+      cpu time            3.02 seconds
+      
+
+18         
+19         proc export data = tmax_dist outfile = "tmax_dist.txt" dbms=tab replace;
+20         
+21         run;
+
+22          /**********************************************************************
+23          *   PRODUCT:   SAS
+24          *   VERSION:   9.3
+25          *   CREATOR:   External File Interface
+26          *   DATE:      01DEC15
+27          *   DESC:      Generated SAS Datastep Code
+28          *   TEMPLATE SOURCE:  (None Specified.)
+29          ***********************************************************************/
+30             data _null_;
+31             %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+32             %let _EFIREC_ = 0;     /* clear export record count macro variable */
+33             file 'tmax_dist.txt' delimiter='09'x DSD DROPOVER lrecl=32767;
+34             if _n_ = 1 then        /* write column names or labels */
+35              do;
+36                put
+37                   "station"
+38                '09'x
+39                   "month"
+40                '09'x
+41                   "mntmax"
+42                '09'x
+43                   "stdtmax"
+44                ;
+45              end;
+46            set  TMAX_DIST   end=EFIEOD;
+47                format station $8. ;
+48                format month best12. ;
+49                format mntmax best12. ;
+50                format stdtmax best12. ;
+51              do;
+52                EFIOUT + 1;
+53                put station $ @;
+54                put month @;
+55                put mntmax @;
+3                                                          The SAS System                            15:51 Tuesday, December 1, 2015
+
+56                put stdtmax ;
+57                ;
+58              end;
+59             if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+60             if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+61             run;
+
+NOTE: The file 'tmax_dist.txt' is:
+      Filename=/afs/umich.edu/user/x/i/xiaoyliu/506/tmax_dist.txt,
+      Owner Name=xiaoyliu,Group Name=wheel,
+      Access Permission=rw-r--r--,
+      Last Modified=Tue Dec  1 15:52:07 2015
+
+NOTE: 22687 records were written to the file 'tmax_dist.txt'.
+      The minimum record length was 14.
+      The maximum record length was 37.
+NOTE: There were 22686 observations read from the data set WORK.TMAX_DIST.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+      
+
+22686 records created in tmax_dist.txt from TMAX_DIST.
+  
+  
+NOTE: "tmax_dist.txt" file was successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.06 seconds
+      
+
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           25.84 seconds
+      cpu time            27.70 seconds
+      

@@ -1,0 +1,247 @@
+1                                                          The SAS System                            15:15 Tuesday, December 1, 2015
+
+NOTE: Copyright (c) 2002-2010 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.3 (TS1M1) 
+      Licensed to UNIVERSITY OF MICHIGAN-SFA-T&R, Site 70080438.
+NOTE: This session is executing on the Linux 2.6.32-504.12.2.el6.x86_64 (LIN X64) platform.
+
+
+
+NOTE: Updated analytical products:
+
+SAS/STAT 9.3_M1, SAS/ETS 9.3_M1, SAS/OR 9.3_M1
+
+You are running SAS 9. Some SAS 8 files will be automatically converted 
+by the V9 engine; others are incompatible.  Please see 
+http://support.sas.com/rnd/migration/planning/platform/64bit.html
+
+PROC MIGRATE will preserve current SAS file attributes and is 
+recommended for converting all your SAS libraries from any 
+SAS 8 release to SAS 9.  For details and examples, please see
+http://support.sas.com/rnd/migration/index.html
+
+
+This message is contained in the SAS news file, and is presented upon
+initialization.  Edit the file "news" in the "misc/base" directory to
+display site-specific news and information in the program log.
+The command line option "-nonews" will prevent this display.
+
+
+
+
+NOTE: SAS initialization used:
+      real time           0.11 seconds
+      cpu time            0.01 seconds
+      
+1          libname mydata '~/506/';
+NOTE: Libref MYDATA was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: /afs/umich.edu/user/x/i/xiaoyliu/506
+1        !                         
+2          
+3          data tmp_range;
+4               set mydata.tmp_range;
+5          
+
+NOTE: There were 1941 observations read from the data set MYDATA.TMP_RANGE.
+NOTE: The data set WORK.TMP_RANGE has 1941 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+6          proc univariate data=tmp_range;
+7               var tmax_range tmin_range;
+8               output out=range10 pctlpts=10 pctlpre=tmax_range tmin_range;
+9          
+
+NOTE: The data set WORK.RANGE10 has 1 observations and 2 variables.
+NOTE: The PROCEDURE UNIVARIATE printed pages 1-4.
+NOTE: PROCEDURE UNIVARIATE used (Total process time):
+2                                                          The SAS System                            15:15 Tuesday, December 1, 2015
+
+      real time           0.02 seconds
+      cpu time            0.02 seconds
+      
+
+10         proc print range10;
+                      _______
+                      22
+                      202
+ERROR 22-322: Syntax error, expecting one of the following: ;, BLANKLINE, DATA, DOUBLE, HEADING, LABEL, N, NOOBS, OBS, ROUND, ROWS, 
+              SPLIT, STYLE, SUMLABEL, UNIFORM, WIDTH.  
+ERROR 202-322: The option or parameter is not recognized and will be ignored.
+11         
+
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+12         data stations;
+13              infile "ghcnd-stations.txt";
+14              input station $ 1-11 lat 13-20 lon 22-30 elev 32-37 state $ 39-40;
+15         
+
+NOTE: The infile "ghcnd-stations.txt" is:
+      Filename=/afs/umich.edu/user/x/i/xiaoyliu/506/ghcnd-stations.txt,
+      Owner Name=xiaoyliu,Group Name=wheel,
+      Access Permission=rw-r--r--,
+      Last Modified=Tue Nov 17 10:53:58 2015,
+      File Size (bytes)=8552184
+
+NOTE: 99444 records were read from the infile "ghcnd-stations.txt".
+      The minimum record length was 85.
+      The maximum record length was 85.
+NOTE: The data set WORK.STATIONS has 99444 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+      
+
+16         proc sort data=stations out=stations2;
+17              by station;
+18         
+
+NOTE: There were 99444 observations read from the data set WORK.STATIONS.
+NOTE: The data set WORK.STATIONS2 has 99444 observations and 5 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.02 seconds
+      
+
+19         data df1;
+20              merge tmp_range(in=x) stations2(in=y);
+21              by station;
+22              if x=1 and y=1;
+23         
+
+3                                                          The SAS System                            15:15 Tuesday, December 1, 2015
+
+WARNING: Multiple lengths were specified for the BY variable station by input data sets. This may cause unexpected results.
+NOTE: There were 1941 observations read from the data set WORK.TMP_RANGE.
+NOTE: There were 99444 observations read from the data set WORK.STATIONS2.
+NOTE: The data set WORK.DF1 has 58413 observations and 8 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.03 seconds
+      
+
+24         data df2;
+25              set df1;
+26              if tmax_range ge 6.68495 and tmin_range ge 6.54762 then delete;
+27              else if tmax_range ge 6.68495 and tmin_range lt 6.54762 then indicator=2;
+28              else if tmax_range lt 6.68495 and tmin_range ge 6.54762 then indicator=3;
+29              else indicator=1;
+30         
+
+NOTE: There were 58413 observations read from the data set WORK.DF1.
+NOTE: The data set WORK.DF2 has 2665 observations and 9 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+31         proc export data=df2 dbms=tab outfile='bottom10.txt' replace;
+31       !                                                              
+32         run;
+
+33          /**********************************************************************
+34          *   PRODUCT:   SAS
+35          *   VERSION:   9.3
+36          *   CREATOR:   External File Interface
+37          *   DATE:      01DEC15
+38          *   DESC:      Generated SAS Datastep Code
+39          *   TEMPLATE SOURCE:  (None Specified.)
+40          ***********************************************************************/
+41             data _null_;
+42             %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+43             %let _EFIREC_ = 0;     /* clear export record count macro variable */
+44             file 'bottom10.txt' delimiter='09'x DSD DROPOVER lrecl=32767;
+45             if _n_ = 1 then        /* write column names or labels */
+46              do;
+47                put
+48                   "station"
+49                '09'x
+50                   "tmax_range"
+51                '09'x
+52                   "tmin_range"
+53                '09'x
+54                   "range_diff"
+55                '09'x
+56                   "lat"
+57                '09'x
+58                   "lon"
+59                '09'x
+60                   "elev"
+61                '09'x
+62                   "state"
+4                                                          The SAS System                            15:15 Tuesday, December 1, 2015
+
+63                '09'x
+64                   "indicator"
+65                ;
+66              end;
+67            set  DF2   end=EFIEOD;
+68                format station $8. ;
+69                format tmax_range best12. ;
+70                format tmin_range best12. ;
+71                format range_diff best12. ;
+72                format lat best12. ;
+73                format lon best12. ;
+74                format elev best12. ;
+75                format state $2. ;
+76                format indicator best12. ;
+77              do;
+78                EFIOUT + 1;
+79                put station $ @;
+80                put tmax_range @;
+81                put tmin_range @;
+82                put range_diff @;
+83                put lat @;
+84                put lon @;
+85                put elev @;
+86                put state $ @;
+87                put indicator ;
+88                ;
+89              end;
+90             if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+91             if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+92             run;
+
+NOTE: The file 'bottom10.txt' is:
+      Filename=/afs/umich.edu/user/x/i/xiaoyliu/506/bottom10.txt,
+      Owner Name=xiaoyliu,Group Name=wheel,
+      Access Permission=rw-r--r--,
+      Last Modified=Tue Dec  1 15:15:08 2015
+
+NOTE: 2666 records were written to the file 'bottom10.txt'.
+      The minimum record length was 30.
+      The maximum record length was 77.
+NOTE: There were 2665 observations read from the data set WORK.DF2.
+NOTE: DATA statement used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+      
+
+2665 records created in bottom10.txt from DF2.
+  
+  
+NOTE: "bottom10.txt" file was successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.03 seconds
+      
+
+
+ERROR: Errors printed on page 2.
+
+5                                                          The SAS System                            15:15 Tuesday, December 1, 2015
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           0.33 seconds
+      cpu time            0.16 seconds
+      

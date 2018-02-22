@@ -1,0 +1,36 @@
+讨论分析数据中的尝试步骤以及结果
+讨论数据结果趋势
+提交一个文件，对不同的部分分页
+
+filename ghcnd_gz pipe "xz -dc 2014.csv.xz" lrecl=80;
+
+data ghcnd:
+     infile ghcnd_gz delimiter=",";
+     input station $ date : yymmdd8. obstype $ obsval;
+     format date mmddyy10.;
+     month = month(date);
+     if obstype="TMAX";
+     obsval=obsval/10;
+
+data stations;
+     infile "ghcnd-stations.txt";
+     input station $ 1-11 lat 13-20 lon 22-30 elev 32-37 state $ 39-40 name $ 4\
+2-71 gsn 73-75 hcn 77-79 wmo 81-85;
+
+
+proc sort data=ghcnd(drop=obstype) out=ghcnd2;
+     by station;
+proc sort data=stations out=stations2;
+     by station;
+
+data ghcnd3;
+     merge ghcnd2(in=x) stations2(in=y);
+     by station;
+     if x=1 and y=1;
+
+proc summary data=ghcnd3 nway:  #group by two levels using nway
+     class station month;
+     output out=meanstats
+     mean(tmax)=mntnp;
+proc print data=meanstat(obs=200);
+

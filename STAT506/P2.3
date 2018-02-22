@@ -1,0 +1,4 @@
+library(dplyr)
+data2 =read.csv("E:/MA 2015/STAT506ps2_1.csv",header=FALSE)
+index<-duplicated(data2$Id)
+data2=data2[!index,]

@@ -1,0 +1,219 @@
+1                                                          The SAS System                            16:21 Tuesday, December 1, 2015
+
+NOTE: Copyright (c) 2002-2010 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.3 (TS1M1) 
+      Licensed to UNIVERSITY OF MICHIGAN-SFA-T&R, Site 70080438.
+NOTE: This session is executing on the Linux 2.6.32-504.12.2.el6.x86_64 (LIN X64) platform.
+
+
+
+NOTE: Updated analytical products:
+
+SAS/STAT 9.3_M1, SAS/ETS 9.3_M1, SAS/OR 9.3_M1
+
+You are running SAS 9. Some SAS 8 files will be automatically converted 
+by the V9 engine; others are incompatible.  Please see 
+http://support.sas.com/rnd/migration/planning/platform/64bit.html
+
+PROC MIGRATE will preserve current SAS file attributes and is 
+recommended for converting all your SAS libraries from any 
+SAS 8 release to SAS 9.  For details and examples, please see
+http://support.sas.com/rnd/migration/index.html
+
+
+This message is contained in the SAS news file, and is presented upon
+initialization.  Edit the file "news" in the "misc/base" directory to
+display site-specific news and information in the program log.
+The command line option "-nonews" will prevent this display.
+
+
+
+
+NOTE: SAS initialization used:
+      real time           0.08 seconds
+      cpu time            0.01 seconds
+      
+1          libname mydata '~/506/';
+NOTE: Libref MYDATA was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: /afs/umich.edu/user/x/i/xiaoyliu/506
+2          filename ghcnd_gz pipe "gzip -dc 2014.csv.gz" lrecl=80;
+3          
+4          data ghcnd14(rename=(obsval=tmax14));
+5               infile ghcnd_gz delimiter=",";
+6               input station $ date : yymmdd8. obstype $ obsval;
+7               format date mmddyy10.;
+8               month = month(date);
+9               if obstype="TMAX";
+10              obsval=obsval/10;
+11              if month=1;
+12              day=day(date);
+13              keep station day obsval;
+14         
+
+NOTE: The infile GHCND_GZ is:
+      Pipe command="gzip -dc 2014.csv.gz"
+
+NOTE: 33139529 records were read from the infile GHCND_GZ.
+      The minimum record length was 32.
+      The maximum record length was 40.
+NOTE: The data set WORK.GHCND14 has 379120 observations and 3 variables.
+2                                                          The SAS System                            16:21 Tuesday, December 1, 2015
+
+NOTE: DATA statement used (Total process time):
+      real time           24.32 seconds
+      cpu time            24.29 seconds
+      
+
+15         proc sql;
+16              create table mntmax_14 as
+17              select station,day,mean(tmax14) as mntmax14
+18              from ghcnd14
+19              group by station,day;
+NOTE: Table WORK.MNTMAX_14 created, with 55379 rows and 3 columns.
+
+20         quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.25 seconds
+      
+
+21         
+22         filename ghcnd_gz pipe "gzip -dc 2013.csv.gz" lrecl=80;
+23         
+24         data ghcnd13(rename=(obsval=tmax13));
+25              infile ghcnd_gz delimiter=",";
+26              input station $ date : yymmdd8. obstype $ obsval;
+27              format date mmddyy10.;
+28              month = month(date);
+29              if obstype="TMAX";
+30              obsval=obsval/10;
+31              if month=1;
+32              day=day(date);
+33              keep station day obsval;
+34         
+
+NOTE: The infile GHCND_GZ is:
+      Pipe command="gzip -dc 2013.csv.gz"
+
+NOTE: 33879674 records were read from the infile GHCND_GZ.
+      The minimum record length was 32.
+      The maximum record length was 41.
+NOTE: The data set WORK.GHCND13 has 410863 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           24.95 seconds
+      cpu time            24.91 seconds
+      
+
+35         proc sql;
+36              create table mntmax_13 as
+37              select station,day,mean(tmax13) as mntmax13
+38              from ghcnd13
+39              group by station,day;
+NOTE: Table WORK.MNTMAX_13 created, with 56062 rows and 3 columns.
+
+40         quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.25 seconds
+      
+
+3                                                          The SAS System                            16:21 Tuesday, December 1, 2015
+
+41         
+42         data meantmax;
+43              merge mntmax_14(in=x) mntmax_13(in=y);
+44              by station day;
+45              if x=1 and y=1;
+46              tmax_diff=mntmax14-mntmax13;
+47         
+
+NOTE: There were 55379 observations read from the data set WORK.MNTMAX_14.
+NOTE: There were 56062 observations read from the data set WORK.MNTMAX_13.
+NOTE: The data set WORK.MEANTMAX has 52685 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+48         proc export data=meantmax dbms=tab outfile="meantmax.txt" replace;
+49         run;
+
+50          /**********************************************************************
+51          *   PRODUCT:   SAS
+52          *   VERSION:   9.3
+53          *   CREATOR:   External File Interface
+54          *   DATE:      01DEC15
+55          *   DESC:      Generated SAS Datastep Code
+56          *   TEMPLATE SOURCE:  (None Specified.)
+57          ***********************************************************************/
+58             data _null_;
+59             %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+60             %let _EFIREC_ = 0;     /* clear export record count macro variable */
+61             file 'meantmax.txt' delimiter='09'x DSD DROPOVER lrecl=32767;
+62             if _n_ = 1 then        /* write column names or labels */
+63              do;
+64                put
+65                   "station"
+66                '09'x
+67                   "day"
+68                '09'x
+69                   "mntmax14"
+70                '09'x
+71                   "mntmax13"
+72                '09'x
+73                   "tmax_diff"
+74                ;
+75              end;
+76            set  MEANTMAX   end=EFIEOD;
+77                format station $8. ;
+78                format day best12. ;
+79                format mntmax14 best12. ;
+80                format mntmax13 best12. ;
+81                format tmax_diff best12. ;
+82              do;
+83                EFIOUT + 1;
+84                put station $ @;
+85                put day @;
+86                put mntmax14 @;
+87                put mntmax13 @;
+88                put tmax_diff ;
+4                                                          The SAS System                            16:21 Tuesday, December 1, 2015
+
+89                ;
+90              end;
+91             if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+92             if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+93             run;
+
+NOTE: The file 'meantmax.txt' is:
+      Filename=/afs/umich.edu/user/x/i/xiaoyliu/506/meantmax.txt,
+      Owner Name=xiaoyliu,Group Name=wheel,
+      Access Permission=rw-r--r--,
+      Last Modified=Tue Dec  1 16:22:28 2015
+
+NOTE: 52686 records were written to the file 'meantmax.txt'.
+      The minimum record length was 16.
+      The maximum record length was 50.
+NOTE: There were 52685 observations read from the data set WORK.MEANTMAX.
+NOTE: DATA statement used (Total process time):
+      real time           0.25 seconds
+      cpu time            0.10 seconds
+      
+
+52685 records created in meantmax.txt from MEANTMAX.
+  
+  
+NOTE: "meantmax.txt" file was successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.29 seconds
+      cpu time            0.13 seconds
+      
+
+94         
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           49.86 seconds
+      cpu time            49.86 seconds
+      

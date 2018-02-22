@@ -1,0 +1,200 @@
+1                                                          The SAS System                            14:05 Tuesday, December 1, 2015
+
+NOTE: Copyright (c) 2002-2010 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.3 (TS1M1) 
+      Licensed to UNIVERSITY OF MICHIGAN-SFA-T&R, Site 70080438.
+NOTE: This session is executing on the Linux 2.6.32-504.12.2.el6.x86_64 (LIN X64) platform.
+
+
+
+NOTE: Updated analytical products:
+
+SAS/STAT 9.3_M1, SAS/ETS 9.3_M1, SAS/OR 9.3_M1
+
+You are running SAS 9. Some SAS 8 files will be automatically converted 
+by the V9 engine; others are incompatible.  Please see 
+http://support.sas.com/rnd/migration/planning/platform/64bit.html
+
+PROC MIGRATE will preserve current SAS file attributes and is 
+recommended for converting all your SAS libraries from any 
+SAS 8 release to SAS 9.  For details and examples, please see
+http://support.sas.com/rnd/migration/index.html
+
+
+This message is contained in the SAS news file, and is presented upon
+initialization.  Edit the file "news" in the "misc/base" directory to
+display site-specific news and information in the program log.
+The command line option "-nonews" will prevent this display.
+
+
+
+
+NOTE: SAS initialization used:
+      real time           0.11 seconds
+      cpu time            0.01 seconds
+      
+1          libname mydata '~/506/';
+NOTE: Libref MYDATA was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: /afs/umich.edu/user/x/i/xiaoyliu/506
+2          filename ghcnd_gz pipe "gzip -dc 2014.csv.gz" lrecl=80;
+3          
+4          data ghcnd;
+5               infile ghcnd_gz delimiter=",";
+6               input station $ date : yymmdd8. obstype $ obsval;
+7               format date mmddyy10.;
+8               month = month(date);
+9               if obstype="TMAX" or obstype="TMIN";
+10              obsval=obsval/10;
+11         
+
+NOTE: The infile GHCND_GZ is:
+      Pipe command="gzip -dc 2014.csv.gz"
+
+NOTE: 33139529 records were read from the infile GHCND_GZ.
+      The minimum record length was 32.
+      The maximum record length was 40.
+NOTE: The data set WORK.GHCND has 8959642 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           26.43 seconds
+      cpu time            26.39 seconds
+2                                                          The SAS System                            14:05 Tuesday, December 1, 2015
+
+      
+
+12         data stations;
+13              infile "ghcnd-stations.txt";
+14              input station $ 1-11 lat 13-20 lon 22-30 elev 32-37 state $ 39-40;
+15         
+
+NOTE: The infile "ghcnd-stations.txt" is:
+      Filename=/afs/umich.edu/user/x/i/xiaoyliu/506/ghcnd-stations.txt,
+      Owner Name=xiaoyliu,Group Name=wheel,
+      Access Permission=rw-r--r--,
+      Last Modified=Tue Nov 17 10:53:58 2015,
+      File Size (bytes)=8552184
+
+NOTE: 99444 records were read from the infile "ghcnd-stations.txt".
+      The minimum record length was 85.
+      The maximum record length was 85.
+NOTE: The data set WORK.STATIONS has 99444 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+16         proc sort data=ghcnd out=ghcnd2;
+17              by station;
+18         
+
+NOTE: There were 8959642 observations read from the data set WORK.GHCND.
+NOTE: The data set WORK.GHCND2 has 8959642 observations and 5 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           2.28 seconds
+      cpu time            5.99 seconds
+      
+
+19         proc sort data=stations out=stations2;
+20              by station;
+21         
+
+NOTE: There were 99444 observations read from the data set WORK.STATIONS.
+NOTE: The data set WORK.STATIONS2 has 99444 observations and 5 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.03 seconds
+      
+
+22         data ghcnd3;
+23              merge ghcnd2(in=x) stations2(in=y);
+24              by station;
+25              if x=1 and y=1;
+26         
+
+WARNING: Multiple lengths were specified for the BY variable station by input data sets. This may cause unexpected results.
+NOTE: MERGE statement has more than one data set with repeats of BY values.
+NOTE: There were 8959642 observations read from the data set WORK.GHCND2.
+NOTE: There were 99444 observations read from the data set WORK.STATIONS2.
+NOTE: The data set WORK.GHCND3 has 8959648 observations and 9 variables.
+NOTE: DATA statement used (Total process time):
+      real time           1.86 seconds
+3                                                          The SAS System                            14:05 Tuesday, December 1, 2015
+
+      cpu time            1.85 seconds
+      
+
+27         proc summary data=ghcnd3 nway;
+28              class station month obstype;
+29              output out=ghcnd4
+30              	    mean(obsval)=mntmp;
+31         
+
+NOTE: There were 8959648 observations read from the data set WORK.GHCND3.
+NOTE: The data set WORK.GHCND4 has 45296 observations and 6 variables.
+NOTE: PROCEDURE SUMMARY used (Total process time):
+      real time           0.85 seconds
+      cpu time            2.71 seconds
+      
+
+32         proc transpose data=ghcnd4(drop=_TYPE_ _FREQ_) out=ghcnd5;
+33              by station month;
+34              id obstype;
+35              var mntmp;
+36         
+
+NOTE: There were 45296 observations read from the data set WORK.GHCND4.
+NOTE: The data set WORK.GHCND5 has 22920 observations and 5 variables.
+NOTE: PROCEDURE TRANSPOSE used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.07 seconds
+      
+
+37         data ghcnd6(drop=_NAME_ elev state);
+38              merge ghcnd5(in=x) stations2(in=y);
+39              by station;
+40              if x=1 and y=1;
+41              tmprange=TMAX-TMIN;
+42         
+
+WARNING: Multiple lengths were specified for the BY variable station by input data sets. This may cause unexpected results.
+NOTE: MERGE statement has more than one data set with repeats of BY values.
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      568 at 41:19   
+NOTE: There were 22920 observations read from the data set WORK.GHCND5.
+NOTE: There were 99444 observations read from the data set WORK.STATIONS2.
+NOTE: The data set WORK.GHCND6 has 65896 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.02 seconds
+      
+
+43         proc print data=ghcnd6;
+44         
+
+NOTE: There were 65896 observations read from the data set WORK.GHCND6.
+NOTE: The PROCEDURE PRINT printed pages 1-1177.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.23 seconds
+      cpu time            0.24 seconds
+      
+4                                                          The SAS System                            14:05 Tuesday, December 1, 2015
+
+
+45         data mydata.finaldata;
+46              set ghcnd6;
+47         
+48         run;
+
+NOTE: There were 65896 observations read from the data set WORK.GHCND6.
+NOTE: The data set MYDATA.FINALDATA has 65896 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.27 seconds
+      cpu time            0.11 seconds
+      
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           32.22 seconds
+      cpu time            37.45 seconds
+      

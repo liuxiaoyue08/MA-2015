@@ -1,0 +1,21 @@
+libname mydata '~/506/';
+filename ghcnd_gz pipe "gzip -dc 2014.csv.gz" lrecl=80;
+
+data ghcnd(rename=(obsval=tmax));
+     infile ghcnd_gz delimiter=",";
+     input station $ date : yymmdd8. obstype $ obsval;
+     format date mmddyy10.;
+     month = month(date);
+     if obstype="TMAX";
+     obsval=obsval/10;
+
+proc sql;
+     creat table tmax_dist as
+     select station,month, mean(tmax) as mntmax, std(tmax) as stdtmax
+     from ghcnd
+     group by station,month;
+quit;
+
+proc export data = tmax_dist outfile = "tmax_dist.txt" dbms=tab replace;
+
+run;
